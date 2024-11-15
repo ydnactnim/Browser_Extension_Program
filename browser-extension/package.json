@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "webpack serve --open",
+    "watch": "webpack --watch",
     "build": "webpack --mode production"
   },
   "keywords": [

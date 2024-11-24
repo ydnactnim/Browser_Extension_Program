@@ -1,0 +1,33 @@
+{
+  "name": "weather-forecast-open-meteo",
+  "version": "1.0.0",
+  "description": "Nominatim API, Open-Meteo Weather API를 활용한 일기예보 브라우저 확장 프로그램",
+  "main": "index.js",
+  "engines": {
+    "npm": ">=9.0.0",
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "build": "webpack",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "chrome extension",
+    "edge extension",
+    "weather forecast",
+    "open-meteo",
+    "nominatim"
+  ],
+  "author": "ydnactnim",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "eslint": "^7.32.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

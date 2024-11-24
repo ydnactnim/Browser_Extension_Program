@@ -13,6 +13,46 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   };
 
+  // 위치 추적 버튼 클릭 시 사용자의 현재 위치를 가져옵니다.
+  geoButton.addEventListener("click", () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          try {
+            // 위도와 경도를 기반으로 Nominatim API를 사용하여 도시 이름을 가져옵니다.
+            const reverseGeoUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+            const response = await fetch(reverseGeoUrl);
+            const data = await response.json();
+            if (data && data.address) {
+              const cityName =
+                data.address.city ||
+                data.address.town ||
+                data.address.village ||
+                "위치 알 수 없음";
+              cityInput.value = cityName;
+              errorMessage.textContent = "";
+            } else {
+              errorMessage.textContent = "위치 정보를 찾을 수 없습니다.";
+            }
+          } catch (error) {
+            console.error("역지오코딩 요청 오류:", error);
+            errorMessage.textContent = "위치 정보를 불러오는데 실패했습니다.";
+          }
+        },
+        (error) => {
+          errorMessage.textContent = "위치 정보를 허용해주세요.";
+          console.error("위치 추적 오류:", error);
+        }
+      );
+    } else {
+      errorMessage.textContent = "지오로케이션을 지원하지 않는 브라우저입니다.";
+    }
+  });
+
+  // 도시 자동완성
   const fetchSuggestions = debounce(async (query) => {
     if (query.length < 2) {
       suggestionsDiv.innerHTML = "";
@@ -46,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchSuggestions(e.target.value);
   });
 
+  // 도시 이름 제출 시
   submitButton.addEventListener("click", async () => {
     const cityName = cityInput.value.trim();
     if (!cityName) {
@@ -72,20 +113,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // 날씨 정보를 로드하는 함수
   function loadWeatherPage(cityName, latitude, longitude) {
     document.getElementById("main-content").innerHTML = `
             <div id="today-weather">
                 <h2>${cityName}의 오늘 날씨</h2>
-                <!-- 여기에서 날씨 API를 통해 가져온 데이터를 시간별로 표시합니다. -->
                 <div id="hourly-weather"></div>
             </div>
             <div id="weekly-weather">
                 <h2>${cityName}의 일주일 날씨</h2>
-                <!-- 여기에서 날씨 API를 통해 가져온 데이터를 요일별로 표시합니다. -->
                 <div id="daily-weather"></div>
             </div>
         `;
-
     fetchWeatherData(latitude, longitude);
   }
 
@@ -95,11 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const weatherResponse = await fetch(weatherUrl);
       const weatherData = await weatherResponse.json();
 
-      // 날씨 데이터를 시간별 및 요일별로 업데이트합니다.
+      // 시간별 날씨 정보 표시
       const hourlyWeatherDiv = document.getElementById("hourly-weather");
-      const dailyWeatherDiv = document.getElementById("daily-weather");
-
-      // 시간별 날씨 정보 표시 (예시)
       weatherData.hourly.temperature_2m.slice(0, 8).forEach((temp, index) => {
         const hour = new Date().getHours() + index * 3;
         const hourlyElement = document.createElement("div");
@@ -107,7 +143,8 @@ document.addEventListener("DOMContentLoaded", () => {
         hourlyWeatherDiv.appendChild(hourlyElement);
       });
 
-      // 일주일 날씨 정보 표시 (예시)
+      // 일주일 날씨 정보 표시
+      const dailyWeatherDiv = document.getElementById("daily-weather");
       weatherData.daily.temperature_2m_max.forEach((temp, index) => {
         const dailyElement = document.createElement("div");
         dailyElement.textContent = `요일 ${index + 1}: 최고 ${temp}°C / 최저 ${

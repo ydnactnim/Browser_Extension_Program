@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- 처음에는 첫 번째 페이지의 콘텐츠를 로드합니다 -->
+      <header id="header">
+        <img src="images/icon-2xl.svg" alt="Weather Icon" id="icon" />
+        <h1>Weather Forecast</h1>
+      </header>
+
+      <main id="main-content">
+        <div id="search-section">
+          <button id="geoButton">현재 위치 사용</button>
+          <input
+            type="text"
+            id="cityInput"
+            placeholder="도시를 검색하세요..."
+            autocomplete="off"
+          />
+          <div id="suggestions"></div>
+          <button id="submitButton">날씨 확인</button>
+        </div>
+      </main>
+
+      <footer id="footer">
+        <p id="error-message"></p>
+      </footer>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
 </html>

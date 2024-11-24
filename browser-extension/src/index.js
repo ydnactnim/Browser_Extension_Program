@@ -145,11 +145,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // 일주일 날씨 정보 표시
       const dailyWeatherDiv = document.getElementById("daily-weather");
+      const daysOfWeek = [
+        "일요일",
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일",
+      ];
+
+      // 오늘의 요일을 기준으로 요일을 순환하여 설정하기 위해 현재 요일을 가져옵니다.
+      const today = new Date();
+      let currentDayIndex = today.getDay();
       weatherData.daily.temperature_2m_max.forEach((temp, index) => {
         const dailyElement = document.createElement("div");
-        dailyElement.textContent = `요일 ${index + 1}: 최고 ${temp}°C / 최저 ${
-          weatherData.daily.temperature_2m_min[index]
-        }°C`;
+
+        // 요일 계산 (index를 더해서 요일 배열의 인덱스를 만듦)
+        const dayOfWeek = daysOfWeek[(currentDayIndex + index) % 7];
+
+        dailyElement.textContent = `${dayOfWeek}: 최고 ${temp}°C / 최저 ${weatherData.daily.temperature_2m_min[index]}°C`;
         dailyWeatherDiv.appendChild(dailyElement);
       });
     } catch (error) {

@@ -1,9 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const geoButton = document.getElementById("geoButton");
   const submitButton = document.getElementById("submitButton");
-  const cityInput = document.getElementById("cityInput");
+  let cityInput = document.getElementById("cityInput");
   const suggestionsDiv = document.getElementById("suggestions");
   const errorMessage = document.getElementById("error-message");
+  let changeLocationButton;
 
   const debounce = (func, delay) => {
     let timeout;
@@ -108,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const { lat, lon } = geoData[0];
       loadWeatherPage(cityName, lat, lon);
+      addChangeLocationButton();
     } catch (error) {
       errorMessage.textContent = "위치를 찾을 수 없습니다. 다시 시도해주세요.";
     }
@@ -170,5 +172,108 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("날씨 정보를 가져오는 중 오류 발생:", error);
     }
+  }
+
+  // 위치 변경하기 버튼을 추가하고 이벤트 리스너를 설정하는 함수
+  function addChangeLocationButton() {
+    document.getElementById("footer").innerHTML = `
+      <button id="changeLocationButton">위치 변경하기</button>
+    `;
+    changeLocationButton = document.getElementById("changeLocationButton");
+    changeLocationButton.addEventListener("click", () => {
+      document.getElementById("main-content").innerHTML = `
+        <div id="search-section">
+          <button id="geoButton">현재 위치 사용</button>
+          <input
+            type="text"
+            id="cityInput"
+            placeholder="도시를 검색하세요..."
+            autocomplete="off"
+          />
+          <div id="suggestions"></div>
+          <button id="submitButton">날씨 확인</button>
+        </div>
+      `;
+      errorMessage.textContent = "";
+      // 새로 생성된 요소들에 대해 이벤트 리스너를 재설정합니다.
+      resetEventListeners();
+      // 위치 변경 버튼 제거
+      document.getElementById("footer").innerHTML = "<p id=\"error-message\"></p>";
+    });
+  }
+
+  // 새로 생성된 요소들에 대해 이벤트 리스너를 재설정하는 함수
+  function resetEventListeners() {
+    const newGeoButton = document.getElementById("geoButton");
+    const newSubmitButton = document.getElementById("submitButton");
+    cityInput = document.getElementById("cityInput");
+    const newSuggestionsDiv = document.getElementById("suggestions");
+
+    newGeoButton.addEventListener("click", () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            try {
+              const reverseGeoUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+              const response = await fetch(reverseGeoUrl);
+              const data = await response.json();
+              if (data && data.address) {
+                const cityName =
+                  data.address.city ||
+                  data.address.town ||
+                  data.address.village ||
+                  "위치 알 수 없음";
+                cityInput.value = cityName;
+                errorMessage.textContent = "";
+              } else {
+                errorMessage.textContent = "위치 정보를 찾을 수 없습니다.";
+              }
+            } catch (error) {
+              console.error("역지오코딩 요청 오류:", error);
+              errorMessage.textContent = "위치 정보를 불러오는데 실패했습니다.";
+            }
+          },
+          (error) => {
+            errorMessage.textContent = "위치 정보를 허용해주세요.";
+            console.error("위치 추적 오류:", error);
+          }
+        );
+      } else {
+        errorMessage.textContent = "지오로케이션을 지원하지 않는 브라우저입니다.";
+      }
+    });
+
+    newSubmitButton.addEventListener("click", async () => {
+      const cityName = cityInput.value.trim();
+      if (!cityName) {
+        errorMessage.textContent = "도시 이름을 입력해주세요.";
+        return;
+      }
+
+      try {
+        const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          cityName
+        )}&format=json&addressdetails=1&limit=1`;
+        const geoResponse = await fetch(geoUrl);
+        const geoData = await geoResponse.json();
+
+        if (geoData.length === 0) {
+          throw new Error("올바른 위치를 찾을 수 없습니다.");
+        }
+
+        const { lat, lon } = geoData[0];
+        loadWeatherPage(cityName, lat, lon);
+        addChangeLocationButton();
+      } catch (error) {
+        errorMessage.textContent = "위치를 찾을 수 없습니다. 다시 시도해주세요.";
+      }
+    });
+
+    cityInput.addEventListener("input", (e) => {
+      fetchSuggestions(e.target.value);
+    });
   }
 });

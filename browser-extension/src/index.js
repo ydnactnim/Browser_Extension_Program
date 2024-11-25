@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
 
       suggestionsDiv.innerHTML = "";
+      suggestionsDiv.style.width = `${cityInput.offsetWidth}px`; // 입력창의 너비에 맞춤
       data.forEach((location) => {
         const suggestion = document.createElement("div");
         suggestion.className = "suggestion";
@@ -132,21 +133,73 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function fetchWeatherData(latitude, longitude) {
     try {
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min&current_weather=true`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode&current_weather=true`;
       const weatherResponse = await fetch(weatherUrl);
       const weatherData = await weatherResponse.json();
 
+      const weatherIcons = {
+        0: "images/clear.svg", // 맑음
+        1: "images/mostly_clear.svg", // 대체로 맑음
+        2: "images/partly_cloudy.svg", // 부분적으로 흐림
+        3: "images/cloudy.svg", // 흐림
+        45: "images/fog.svg", // 안개
+        48: "images/sleet.svg", // 진눈깨비
+        51: "images/ligth_drizzle.svg", // 약한 이슬비
+        53: "images/medium_drizzle.svg", // 중간 이슬비
+        55: "images/heavy_drizzle.svg", // 강한 이슬비
+        61: "images/light_rain.svg", // 약한 비
+        63: "images/medium_rain.svg", // 중간 비
+        65: "images/heavy_rain.svg", // 강한 비
+        80: "images/shower.svg", // 소나기
+        81: "images/heavy_shower.svg", // 강한 소나기
+        95: "images/thunderstorm.svg", // 천둥번개
+        // 필요한 추가 아이콘
+      };
+
+      const weatherDescriptions = {
+        0: "맑음",
+        1: "대체로 맑음",
+        2: "부분적으로 흐림",
+        3: "흐림",
+        45: "안개",
+        48: "진눈깨비",
+        51: "약한 이슬비",
+        53: "중간 이슬비",
+        55: "강한 이슬비",
+        61: "약한 비",
+        63: "중간 비",
+        65: "강한 비",
+        80: "소나기",
+        81: "강한 소나기",
+        95: "천둥번개",
+        // 더 많은 날씨 코드를 추가 가능
+      };
+
       // 시간별 날씨 정보 표시
       const hourlyWeatherDiv = document.getElementById("hourly-weather");
-      weatherData.hourly.temperature_2m.slice(0, 8).forEach((temp, index) => {
+      weatherData.hourly.weathercode.slice(0, 8).forEach((code, index) => {
         const hour = new Date().getHours() + index * 3;
+        const weatherDescription =
+          weatherDescriptions[code] || "날씨 정보 없음";
+        const weatherIcon = weatherIcons[code] || "images/default.svg";
+
         const hourlyElement = document.createElement("div");
-        hourlyElement.textContent = `${hour % 24}시: ${temp}°C`;
+
+        // 아이콘을 추가합니다.
+        const iconElement = document.createElement("img");
+        iconElement.src = weatherIcon;
+        iconElement.alt = weatherDescription;
+        iconElement.className = "weather-icon"; // 스타일을 지정하기 위한 클래스
+
+        hourlyElement.appendChild(iconElement);
+        hourlyElement.innerHTML += `<strong>${
+          hour % 24
+        }시</strong><br>${weatherDescription}`;
+
         hourlyWeatherDiv.appendChild(hourlyElement);
       });
 
       // 일주일 날씨 정보 표시
-      const dailyWeatherDiv = document.getElementById("daily-weather");
       const daysOfWeek = [
         "일요일",
         "월요일",
@@ -156,17 +209,26 @@ document.addEventListener("DOMContentLoaded", () => {
         "금요일",
         "토요일",
       ];
+      let currentDayIndex = new Date().getDay();
+      const dailyWeatherDiv = document.getElementById("daily-weather");
 
-      // 오늘의 요일을 기준으로 요일을 순환하여 설정하기 위해 현재 요일을 가져옵니다.
-      const today = new Date();
-      let currentDayIndex = today.getDay();
-      weatherData.daily.temperature_2m_max.forEach((temp, index) => {
+      weatherData.daily.weathercode.forEach((code, index) => {
+        const dayOfWeek = daysOfWeek[(currentDayIndex + index) % 7];
+        const weatherDescription =
+          weatherDescriptions[code] || "날씨 정보 없음";
+        const weatherIcon = weatherIcons[code] || "images/default.svg";
+
         const dailyElement = document.createElement("div");
 
-        // 요일 계산 (index를 더해서 요일 배열의 인덱스를 만듦)
-        const dayOfWeek = daysOfWeek[(currentDayIndex + index) % 7];
+        // 아이콘을 추가합니다.
+        const iconElement = document.createElement("img");
+        iconElement.src = weatherIcon;
+        iconElement.alt = weatherDescription;
+        iconElement.className = "weather-icon";
 
-        dailyElement.textContent = `${dayOfWeek}: 최고 ${temp}°C / 최저 ${weatherData.daily.temperature_2m_min[index]}°C`;
+        dailyElement.appendChild(iconElement);
+        dailyElement.innerHTML += `<strong>${dayOfWeek}</strong><br>${weatherDescription}`;
+
         dailyWeatherDiv.appendChild(dailyElement);
       });
     } catch (error) {
@@ -198,7 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // 새로 생성된 요소들에 대해 이벤트 리스너를 재설정합니다.
       resetEventListeners();
       // 위치 변경 버튼 제거
-      document.getElementById("footer").innerHTML = "<p id=\"error-message\"></p>";
+      document.getElementById("footer").innerHTML =
+        '<p id="error-message"></p>';
     });
   }
 
@@ -242,7 +305,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         );
       } else {
-        errorMessage.textContent = "지오로케이션을 지원하지 않는 브라우저입니다.";
+        errorMessage.textContent =
+          "지오로케이션을 지원하지 않는 브라우저입니다.";
       }
     });
 
@@ -268,7 +332,8 @@ document.addEventListener("DOMContentLoaded", () => {
         loadWeatherPage(cityName, lat, lon);
         addChangeLocationButton();
       } catch (error) {
-        errorMessage.textContent = "위치를 찾을 수 없습니다. 다시 시도해주세요.";
+        errorMessage.textContent =
+          "위치를 찾을 수 없습니다. 다시 시도해주세요.";
       }
     });
 

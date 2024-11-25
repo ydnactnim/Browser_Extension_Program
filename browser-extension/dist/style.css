@@ -166,14 +166,15 @@ var {
 }
 
 #suggestions {
-  width: 100%;
+  width: 100%; /* 입력창의 가로 크기와 동일하게 설정 */
   border: 1px solid #ccc;
-  max-height: 150px;
-  overflow-y: auto;
+  max-height: 150px; /* 최대 높이를 설정하여 스크롤 가능하게 만듦 */
+  overflow-y: auto; /* 자동으로 세로 스크롤을 활성화 */
   background: white;
   position: absolute;
   z-index: 10;
   margin-top: 5px;
+  box-sizing: border-box; /* 패딩과 테두리를 포함하여 크기를 계산 */
 }
 
 .suggestion {
@@ -253,4 +254,11 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
+}
+
+.weather-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
 }

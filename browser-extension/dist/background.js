@@ -1,14 +1,16 @@
-chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-  if (msg.action === "fetchWeatherData") {
-    try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${msg.latitude}&longitude=${msg.longitude}&hourly=temperature_2m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Weather Forecast Extension installed!");
+});
+
+// 현재 위치 요청 처리
+chrome.action.onClicked.addListener(() => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log(
+        `위도: ${position.coords.latitude}, 경도: ${position.coords.longitude}`
       );
-      const data = await response.json();
-      sendResponse({ success: true, data });
-    } catch (error) {
-      sendResponse({ success: false, error: "Failed to fetch weather data." });
-    }
+    });
+  } else {
+    console.error("지오로케이션을 사용할 수 없습니다.");
   }
-  return true; // async response
 });

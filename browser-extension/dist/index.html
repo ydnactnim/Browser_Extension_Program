@@ -3,34 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather Forecast with Open-Meteo</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- 상단 DIV -->
-    <div class="header">
-      <h1>Weather Forecast with Open-Meteo</h1>
-    </div>
+    <div id="app">
+      <!-- 처음에는 첫 번째 페이지의 콘텐츠를 로드합니다 -->
+      <header id="header">
+        <img src="images/icon-2xl.svg" alt="Weather Icon" id="icon" />
+        <h1>Weather Forecast</h1>
+      </header>
 
-    <!-- 중단 DIV -->
-    <div class="location-input">
-      <button id="track-location">위치 추적</button>
-      <input
-        type="text"
-        id="manual-location"
-        placeholder="도시 또는 지역 입력"
-      />
-      <button id="submit-location">위치 설정</button>
-      <p id="current-location"></p>
-      <!-- 위치가 입력되었을 때 표시될 텍스트 -->
-    </div>
+      <main id="main-content">
+        <div id="search-section" style="position: relative">
+          <button id="geoButton">현재 위치 사용</button>
+          <input
+            type="text"
+            id="cityInput"
+            placeholder="도시를 검색하세요..."
+            autocomplete="off"
+          />
+          <div id="suggestions"></div>
+          <button id="submitButton">날씨 확인</button>
+        </div>
+      </main>
 
-    <!-- 하단 DIV -->
-    <div class="forecast">
-      <div id="weather-info">
-        <!-- 일기 예보 내용이 여기에 표시될 예정 -->
-      </div>
-      <p id="error-message" style="display: none">Wrong Location</p>
+      <footer id="footer">
+        <p id="error-message"></p>
+      </footer>
     </div>
 
     <script src="main.js"></script>

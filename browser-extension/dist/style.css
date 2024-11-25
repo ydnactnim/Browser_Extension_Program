@@ -1,84 +1,264 @@
-/* 전체 페이지의 기본 스타일 */
-* {
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+textarea,
+p,
+blockquote,
+th,
+td,
+input,
+select,
+button {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
-
+fieldset,
+img {
+  border: 0 none;
+}
+dl,
+ul,
+ol,
+menu,
+li {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+input,
+select,
+textarea,
+button {
+  vertical-align: middle;
+  font-size: 100%;
+}
+button {
+  border: 0 none;
+  background-color: transparent;
+  cursor: pointer;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f0f0f5;
+  -webkit-text-size-adjust: none;
+} /* 뷰포트 변환시 폰트크기 자동확대 방지. */
+input[type="text"],
+input[type="password"],
+input[type="submit"],
+input[type="search"],
+input[type="tel"],
+input[type="email"],
+html input[type="button"],
+input[type="reset"] {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+body {
+  background: #fff;
+}
+body,
+th,
+td,
+input,
+select,
+textarea,
+button {
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: "MalgunGothic", "맑은 고딕", sans-serif;
+  color: #333;
+} /* color값은 디자인가이드에 맞게사용 */
+a {
+  color: #333;
+  text-decoration: none;
+}
+a:active,
+a:hover {
+  text-decoration: none;
+}
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+var {
+  font-style: normal;
+  font-weight: normal;
 }
 
-/* 상단 DIV 스타일 */
-.header {
+/* 앱 전체 */
+#app {
+  width: 300px;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 0 auto; /* 화면 중앙 정렬 */
+}
+
+/* 헤더 스타일 */
+#header {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.header h1 {
-  font-size: 1.8em;
+#icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+#header h1 {
+  font-size: 1.5em;
+  color: #007bff;
+}
+
+/* 메인 콘텐츠 스타일 */
+#main-content {
+  margin-bottom: 20px;
+}
+
+/* 검색 섹션 */
+#search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#cityInput {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+#suggestions {
+  width: 100%; /* 입력창의 가로 크기와 동일하게 설정 */
+  border: 1px solid #ccc;
+  max-height: 150px; /* 최대 높이를 설정하여 스크롤 가능하게 만듦 */
+  overflow-y: auto; /* 자동으로 세로 스크롤을 활성화 */
+  background: white;
+  position: absolute;
+  z-index: 10;
+  margin-top: 5px;
+  box-sizing: border-box; /* 패딩과 테두리를 포함하여 크기를 계산 */
+}
+
+.suggestion {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.suggestion:hover {
+  background-color: #e0e0e0;
+}
+
+#geoButton,
+#submitButton {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#geoButton:hover,
+#submitButton:hover {
+  background-color: #0056b3;
+}
+
+/* 오류 메시지 스타일 */
+#error-message {
+  margin-top: 10px;
+  color: red;
+  text-align: center;
+}
+
+/* 날씨 정보 페이지 - 시간별, 일주일 날씨 */
+#today-weather,
+#weekly-weather {
+  margin-bottom: 20px;
+}
+
+#today-weather h2,
+#weekly-weather h2 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
   color: #333;
 }
 
-/* 중단 DIV 스타일 */
-.location-input {
+#hourly-weather,
+#daily-weather {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+  overflow-x: scroll;
+  padding-bottom: 10px;
 }
 
-.location-input input[type="text"] {
-  padding: 8px;
-  margin: 10px 0;
-  width: 200px;
-  border: 1px solid #ddd;
+#hourly-weather div,
+#daily-weather div {
+  padding: 10px;
+  margin-right: 5px;
+  background: #f9f9f9;
   border-radius: 4px;
-}
-
-.location-input button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4caf50;
-  color: white;
-  cursor: pointer;
-  margin: 5px;
-}
-
-.location-input button:hover {
-  background-color: #45a049;
-}
-
-.location-input #current-location {
-  margin-top: 10px;
-  font-size: 1em;
-  color: #555;
-}
-
-/* 하단 DIV 스타일 */
-.forecast {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 100px;
   text-align: center;
-  width: 100%;
-  max-width: 600px;
 }
 
-#weather-info {
-  padding: 20px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  display: none; /* 기본으로 숨김 */
+#hourly-weather div:nth-child(even),
+#daily-weather div:nth-child(even) {
+  background: #e0e7ff;
 }
 
-#error-message {
-  color: red;
-  font-size: 1.2em;
+/* 화면 중앙 정렬 */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.weather-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
 }
